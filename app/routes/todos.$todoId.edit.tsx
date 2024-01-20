@@ -15,7 +15,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   await updateTodo({
     id: Number(params.todoId),
     title: String(formData.get("title")),
-    done: formData.get("done") === "完了"
+    done: formData.get("done") === "complete"
   });
 
   return await redirect("/todos");
@@ -25,18 +25,18 @@ export default function EditTodos() {
   const todo = useLoaderData<typeof loader>();
 
   return (
-    <Form method="post" className="flex items-end space-x-4 bg-cyan-200">
+    <Form method="post">
       <div>
-        <div>タイトル</div>
+        <div>title</div>
         <input type="text" defaultValue={todo.title} id="title" name="title" />
       </div>
       <div>
-        <span>未了</span>
-        <input type="radio" value="未了" id="not-done" defaultChecked={!todo.done} name="done" />
-        <span>完了</span>
-        <input type="radio" value="完了" id="done" defaultChecked={todo.done} name="done" />
+        <span>not complete</span>
+        <input type="radio" value="not_complete" id="not-done" defaultChecked={!todo.done} name="done" />
+        <span>complete</span>
+        <input type="radio" value="complete" id="done" defaultChecked={todo.done} name="done" />
       </div>
-      <button type="submit">更新</button>
+      <button type="submit">update</button>
     </Form>
   );
 }
