@@ -1,12 +1,6 @@
-import { Link, Form, Outlet, useLoaderData } from "@remix-run/react";
-import { json } from "@remix-run/node";
+import { Link, Form, Outlet, useRouteLoaderData } from "@remix-run/react";
 import type { LinksFunction } from "@remix-run/node";
-import { getTodos } from "~/models/todo.server";
-
-export const loader = async () => {
-  const todos = await getTodos();
-  return json(todos);
-};
+import type { Todo } from "~/models/todo.server";
 
 // 親ルート(/todos)で読み込まれていたスタイルに加えてスタイルを適用
 import styles from "~/styles/todos._index.css";
@@ -15,7 +9,8 @@ export const links: LinksFunction = () => [
 ];
 
 export default function Index() {
-  const todos = useLoaderData<typeof loader>();
+  // 親のloaderを呼び出してTodo一覧を取得
+  const todos = useRouteLoaderData("routes/todos") as Todo[];
 
   return (
     <>
