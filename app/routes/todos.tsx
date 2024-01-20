@@ -29,7 +29,12 @@ export default function Index() {
     <>
       <h1>/todos</h1>
       <Outlet />
-      <Link to="/">back</Link>
+      <div>
+        <Link to="/todos">to /todos</Link>
+      </div>
+      <div>
+        <Link to="/">to top</Link>
+      </div>
     </>
   );
 }

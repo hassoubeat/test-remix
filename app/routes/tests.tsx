@@ -23,7 +23,7 @@ export default function Index() {
       <div> useState text: {text} </div>
       <input type="text" onChange={changeText} value={text} />
       <div>
-        <Link to="/">back</Link>
+        <Link to="/">to top</Link>
       </div>
     </>
   );
