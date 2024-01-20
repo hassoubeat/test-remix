@@ -1,7 +1,7 @@
 import { prisma } from "~/utils/db.server";
 
 export type Todo = {
-  id: number,
+  id?: number,
   title: string,
   done: boolean,
 }
@@ -12,6 +12,10 @@ export async function getTodo(id: number) {
 
 export async function getTodos() {
   return prisma.todo.findMany();
+}
+
+export async function createTodo(title: string) {
+  return prisma.todo.create({ data: { title, done: false } });
 }
 
 export async function updateTodo(todo: Todo) {

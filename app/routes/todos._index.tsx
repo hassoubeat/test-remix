@@ -11,13 +11,18 @@ export default function Index() {
   const todos = useLoaderData<typeof loader>();
 
   return (
-    <ul>
-      {todos.map((todo) => (
-        <li key={todo.id}>
-          <Link to={`${todo.id}/edit`}>{todo.title}</Link>
-        </li>
-      ))}
+    <>
+      <div>
+        <Link to="new">new</Link>
+      </div>
+      <ul>
+        {todos.map((todo) => (
+          <li key={todo.id}>
+            <Link to={`${todo.id}/edit`}>{todo.title}</Link>
+          </li>
+        ))}
+      </ul>
       <Outlet />
-    </ul>
+    </>
   );
 }
