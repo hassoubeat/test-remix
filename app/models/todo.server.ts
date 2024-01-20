@@ -24,3 +24,7 @@ export async function updateTodo(todo: Todo) {
     data: { title: todo.title, done: todo.done },
   });
 }
+
+export async function deleteTodo(id: number) {
+  return prisma.todo.delete({ where: { id } });
+}
