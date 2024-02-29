@@ -20,6 +20,8 @@ export default function App() {
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
+        {/* SSRだとAntDisignV5はCSSinJSで実装されているが故、画面表示時にちらつき(FOUC)が発生する。対応としてスタイルをCSS出力して初期に読み込むようにしている(https://ant.design/docs/react/server-side-rendering) */}
+        <link rel="stylesheet" type="text/css" href="../antd.min.css" />
         <Links />
       </head>
       <body>

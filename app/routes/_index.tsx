@@ -12,6 +12,9 @@ export default function Index() {
         <li>
           <Link to="/tests">/tests</Link>
         </li>
+        <li>
+          <Link to="/ant_design">/ant_design</Link>
+        </li>
       </ul>
     </div>
   );

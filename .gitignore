@@ -4,5 +4,6 @@
 
 /.cache
 /build
+/public/antd.min.css
 /public/build
 .env
