@@ -16,6 +16,7 @@
     "db_gui": "npx prisma studio"
   },
   "dependencies": {
+    "@ant-design/icons": "^5.3.1",
     "@ant-design/static-style-extract": "^1.0.2",
     "@prisma/client": "^5.8.1",
     "@remix-run/css-bundle": "^2.5.1",
