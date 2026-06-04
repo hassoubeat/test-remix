@@ -1,0 +1,27 @@
+name: Sync test.json to sentry-test
+
+# main にマージ(push)され、かつ test.json に差分があったときに発火する。
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - test.json
+
+# 固定ブランチへの push が同時実行で競合しないよう直列化する。
+concurrency:
+  group: sync-test-json
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      # composite action と同期元の test.json を取得する。
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/sync-test-json
+        with:
+          app_key: ${{ secrets.GH_APP_PRIVATE_KEY }}

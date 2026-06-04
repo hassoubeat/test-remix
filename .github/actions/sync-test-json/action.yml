@@ -1,0 +1,67 @@
+name: Sync test.json to sentry-test
+description: test.json を wakutech/sentry-test に同期し、固定ブランチで更新 PR を作成する。
+inputs:
+  app_key:
+    description: The private key of github app.
+    required: true
+  source_file:
+    description: 同期元(このリポジトリ)内のファイルパス。
+    required: false
+    default: test.json
+  target_file:
+    description: 同期先(sentry-test)内の出力パス。
+    required: false
+    default: test.json
+  branch_name:
+    description: 更新 PR を集約するための sentry-test 上の固定ブランチ名。
+    required: false
+    default: sync-sums-test-json
+runs:
+  using: "composite"
+  steps:
+    - id: get-gh-token
+      uses: actions/create-github-app-token@v3
+      with:
+        client-id: Iv23li8IIb0uanRcT3mZ
+        private-key: ${{ inputs.app_key }}
+        owner: ${{ github.repository_owner }}
+        repositories: sentry-test
+    - id: get-gh-user
+      shell: bash
+      run: echo "user-id=$(gh api "/users/${{ steps.get-gh-token.outputs.app-slug }}[bot]" --jq .id)" >> "$GITHUB_OUTPUT"
+      env:
+        GH_TOKEN: ${{ steps.get-gh-token.outputs.token }}
+    - shell: bash
+      run: |
+        git config --global user.name '${{ steps.get-gh-token.outputs.app-slug }}[bot]'
+        git config --global user.email '${{ steps.get-gh-user.outputs.user-id }}+${{ steps.get-gh-token.outputs.app-slug }}[bot]@users.noreply.github.com'
+    - uses: actions/checkout@v6
+      with:
+        repository: ${{ github.repository_owner }}/sentry-test
+        token: ${{ steps.get-gh-token.outputs.token }}
+        path: ./sentry-test
+    - id: update-sync
+      shell: bash
+      continue-on-error: true
+      run: |
+        # 固定ブランチを最新 main から作り直す(push ごとに別 PR を作らず 1 本の PR に集約する)。
+        git -C sentry-test checkout -B "${{ inputs.branch_name }}"
+        cp "${{ inputs.source_file }}" "sentry-test/${{ inputs.target_file }}"
+        # 新規ファイルも検知できるよう add 後に --cached で差分を見る。
+        # 差分なし(outcome=success)なら以降をスキップ、差分あり(outcome=failure)なら PR 化。
+        git -C sentry-test add "${{ inputs.target_file }}"
+        git -C sentry-test diff --cached --exit-code
+    - id: pr
+      shell: bash
+      working-directory: ./sentry-test
+      if: steps.update-sync.outcome == 'failure'
+      run: |
+        git commit -m "Sync test.json from ${{ github.repository }}@${{ github.sha }}"
+        # 固定ブランチを最新内容で上書き。既存 PR があればこの push で自動更新される。
+        git push -f -u origin "${{ inputs.branch_name }}"
+        # PR が未作成のときだけ作る。
+        if [ -z "$(gh pr list --head "${{ inputs.branch_name }}" --state open --json number --jq '.[].number')" ]; then
+          gh pr create --head "${{ inputs.branch_name }}" --fill
+        fi
+      env:
+        GH_TOKEN: ${{ steps.get-gh-token.outputs.token }}
